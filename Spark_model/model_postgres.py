@@ -1,6 +1,6 @@
 import json
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, explode, count
 from pyspark.ml.recommendation import ALS
 from pyspark.ml.evaluation import RegressionEvaluator
 
@@ -17,7 +17,7 @@ db_properties = {
 jdbc_jar_url = "https://jdbc.postgresql.org/download/postgresql-42.7.3.jar"
 
 
-model_save_path = "models/als_model"  # Path to save the model
+# model_save_path = "models/als_model"  # Path to save the model
 
 if __name__ == "__main__":
     # Initialize SparkSession
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     als_model = als.fit(train_data)
 
     # Save the model
-    als_model.save(model_save_path)
+    #als_model.save(model_save_path)
 
     # Make predictions on the test data
     predictions = als_model.transform(test_data)
@@ -80,5 +80,5 @@ if __name__ == "__main__":
 
     rmse = evaluator.evaluate(predictions)
     print(f"Root-mean-square error = {rmse}")
-
+    
     spark.stop()

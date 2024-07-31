@@ -1,0 +1,14 @@
+/venv
+/ETL/games_detailed_info.csv
+/ETL/games_info.csv
+/ETL/bgg-19m-reviews.csv
+/ETL/bgg-15m-reviews.csv
+/ETL/2020-08-19.csv
+/ETL/2022-01-08.csv
+/ETL/reviews_15m.csv
+/ETL/reviews_19m.csv
+/ETL/users_15m.csv
+/ETL/users_19m.csv
+/Database/initdb.d/games_info.csv
+/Database/initdb.d/reviews_15m.csv
+/Database/initdb.d/users_15m.csv
