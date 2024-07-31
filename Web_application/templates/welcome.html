@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<h1>Welcome to Our Board Games Site!</h1>
+<p>Explore the top board games collected from around the world.</p>
+<div>
+    <button onclick="window.location.href='{{ url_for('top_ranked_games') }}'">View Top Ranked Games</button>
+    <button onclick="window.location.href='{{ url_for('top_rated_games') }}'">View Top Rated Games</button>
+    <button onclick="window.location.href='{{ url_for('most_popular_games') }}'">View Most Popular Games</button>
+</div>
+{% endblock %}

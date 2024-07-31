@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<h1>User Profile</h1>
+<p>Username: {{ user.username }}</p>
+<p>Email: {{ user.email }}</p>
+
+<h2>Rated Games</h2>
+<div class="rated-games">
+    {% for item in rated_games %}
+    <div class="game-card">
+        <a href="{{ url_for('game_detail', id=item.game.id) }}">
+            <img src="{{ item.game.image }}" alt="{{ item.game.name }}">
+        </a>
+        <p>{{ item.game.name }}</p>
+        <p>Your Rating: {{ item.rating }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if prev_url %}
+    <a href="{{ prev_url }}">Previous</a>
+    {% endif %}
+    {% if next_url %}
+    <a href="{{ next_url }}">Next</a>
+    {% endif %}
+</div>
+{% endblock %}

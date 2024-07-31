@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Most Popular Games{% endblock %}
+
+{% block content %}
+<h1>Most Popular Board Games</h1>
+<div class="games-grid">
+    {% for game in games %}
+    <div class="game-card">
+        <a href="{{ url_for('game_detail', id=game.id) }}">
+            <img src="{{ game.image }}" alt="{{ game.name }}">
+        </a>
+        <p>{{ game.name }}</p>
+        <p>Users Rated: {{ game.usersrated|int }}</p>
+    </div>
+    {% endfor %}
+</div>
+<div class="pagination">
+    {% if prev_url %}
+    <a href="{{ prev_url }}">Previous</a>
+    {% endif %}
+    {% if next_url %}
+    <a href="{{ next_url }}">Next</a>
+    {% endif %}
+</div>
+{% endblock %}

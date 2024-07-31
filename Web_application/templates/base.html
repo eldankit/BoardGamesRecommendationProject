@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Board Games{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('top_ranked_games') }}">Top Ranked</a>
+            <a href="{{ url_for('top_rated_games') }}">Top Rated</a>
+            <a href="{{ url_for('most_popular_games') }}">Most Popular</a>
+        </div>
+        <div class="navbar-right">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('user_profile') }}">{{ current_user.username }}</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="logo-container">
+        <a href="{{ url_for('home') }}">
+            <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Logo" class="logo">
+        </a>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

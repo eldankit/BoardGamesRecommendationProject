@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Game Details{% endblock %}
+
+{% block content %}
+<h2>{{ game.name }}</h2>
+<div class="game-detail">
+    <img src="{{ game.image }}" alt="{{ game.name }}">
+    <div class="game-info">
+        <h3 class="rank-display">Board Game Rank: {{ game.board_game_rank|int }}</h3>
+        <p><strong>Description:</strong> {{ game.description }}</p>
+        <p><strong>Year Published:</strong> {{ game.yearpublished|int }}</p>
+        <p><strong>Players:</strong> {{ game.minplayers|int }} - {{ game.maxplayers|int }}</p>
+        <p><strong>Playing Time:</strong> {{ game.playingtime|int }} minutes</p>
+        <p><strong>Minimum Age:</strong> {{ game.minage|int }}</p>
+        <p><strong>Category:</strong> {{ ', '.join(game.category) }}</p>
+        <p><strong>Users Rated:</strong> {{ game.usersrated|int }}</p>
+        <p><strong>Average Rating:</strong> {{ "%.2f"|format(game.average) }}</p>
+        <p><strong>Fanaticscore:</strong> {{ "%.2f"|format(game.bayesaverage) }}</p>
+    </div>
+</div>
+
+{% if current_user.is_authenticated %}
+<div class="rating-form">
+    {% if user_rating is not none %}
+    <p>Your Rating: {{ user_rating }}</p>
+    {% endif %}
+    <form action="{{ url_for('rate_game', game_id=game.id) }}" method="POST">
+        <label for="rating">Rate this game between 1 and 10:</label>
+        <input type="number" id="rating" name="rating" min="1" max="10" required>
+        <button type="submit">Submit Rating</button>
+    </form>
+</div>
+{% endif %}
+{% endblock %}
