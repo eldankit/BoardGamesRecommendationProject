@@ -1,6 +1,6 @@
 import json
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, explode, count
+from pyspark.sql.functions import col, explode, count, collect_list, slice
 from pyspark.ml.recommendation import ALS
 from pyspark.ml.evaluation import RegressionEvaluator
 
@@ -15,7 +15,6 @@ db_properties = {
 
 # URL of the PostgreSQL JDBC .jar file
 jdbc_jar_url = "https://jdbc.postgresql.org/download/postgresql-42.7.3.jar"
-
 
 # model_save_path = "models/als_model"  # Path to save the model
 
@@ -81,4 +80,41 @@ if __name__ == "__main__":
     rmse = evaluator.evaluate(predictions)
     print(f"Root-mean-square error = {rmse}")
     
+    # Get top 50 recommendations for all users
+    user_recommendations = als_model.recommendForAllUsers(50)
+    
+    # Count the number of reviews for each game
+    game_review_counts = df.groupBy("id").agg(count("rating").alias("review_count"))
+    
+    # Filter games with more than 100 reviews
+    popular_games = game_review_counts.filter(col("review_count") > 100)
+    
+    # Explode the recommendations array
+    exploded_recommendations = user_recommendations \
+        .withColumn("recommendation", explode("recommendations")) \
+        .select("user_id", col("recommendation.id").alias("game_id"))
+
+    # Join exploded recommendations with popular games
+    filtered_recommendations = exploded_recommendations \
+        .join(popular_games, exploded_recommendations.game_id == popular_games.id) \
+        .groupBy("user_id") \
+        .agg(collect_list("game_id").alias("recommendation_list"))
+    
+    # Select only the top 5 recommendations for each user
+    top_5_recommendations = filtered_recommendations \
+        .withColumn("recommendation_list", slice(col("recommendation_list"), 1, 5)) \
+        .select("user_id", "recommendation_list") \
+        .orderBy("user_id")
+
+    # Display the final DataFrame
+    top_5_recommendations.show(truncate=False)
+
+    # Write the final DataFrame to PostgreSQL table 'recommendations'
+    top_5_recommendations.write.jdbc(
+        url=db_url,
+        table="recommendations",
+        mode="overwrite",  # Overwrite the table if it exists
+        properties=db_properties
+    )
+
     spark.stop()
