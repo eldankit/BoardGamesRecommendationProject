@@ -56,6 +56,14 @@ class Review(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('games.id'), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), primary_key=True)
 
+class Recommendation(db.Model):
+    __tablename__ = 'recommendations'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), primary_key=True)
+    recommendation_list = db.Column(ARRAY(db.Integer))  # List of up to 5 game IDs
+
+    user = db.relationship('User', backref=db.backref('recommendation', uselist=False))
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -159,7 +167,15 @@ def user_profile():
     ]
     next_url = url_for('user_profile', page=user_ratings.next_num) if user_ratings.has_next else None
     prev_url = url_for('user_profile', page=user_ratings.prev_num) if user_ratings.has_prev else None
-    return render_template('profile.html', user=current_user, rated_games=rated_games, next_url=next_url, prev_url=prev_url)
+
+    # Fetch recommendations
+    recommendation = Recommendation.query.filter_by(user_id=current_user.user_id).first()
+    recommended_games = []
+    if recommendation and recommendation.recommendation_list:
+        recommended_games = [Game.query.get(game_id) for game_id in recommendation.recommendation_list]
+
+    return render_template('profile.html', user=current_user, rated_games=rated_games, next_url=next_url, prev_url=prev_url, recommended_games=recommended_games)
+
 
 
 @app.route('/rate_game/<int:game_id>', methods=['POST'])

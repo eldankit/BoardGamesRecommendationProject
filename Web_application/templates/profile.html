@@ -28,4 +28,25 @@
     <a href="{{ next_url }}">Next</a>
     {% endif %}
 </div>
+
+<h2>Recommended for You</h2>
+{% if recommended_games %}
+<div class="recommended-games">
+    {% for game in recommended_games %}
+    <div class="game-card">
+        <a href="{{ url_for('game_detail', id=game.id) }}">
+            <img src="{{ game.image }}" alt="{{ game.name }}">
+        </a>
+        <p>{{ game.name }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>Explore and rate more games to get recommendations made for you!</p>
+<div class="explore-links">
+    <a href="{{ url_for('most_popular_games') }}">Most Popular Games</a>
+    <a href="{{ url_for('top_rated_games') }}">Top Rated Games</a>
+    <a href="{{ url_for('top_ranked_games') }}">Top Ranked Games</a>
+</div>
+{% endif %}
 {% endblock %}

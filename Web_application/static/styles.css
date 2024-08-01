@@ -178,3 +178,30 @@ button {
 button:hover {
     background-color: #45a049;
 }
+
+.recommended-games {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.explore-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.explore-links a {
+    margin: 10px 0;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.explore-links a:hover {
+    background-color: #45a049;
+}
