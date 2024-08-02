@@ -4,6 +4,8 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import func, desc
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
+from confluent_kafka import Producer
+import json
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Set a secret key for sessions
@@ -16,6 +18,17 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+# Initialize Kafka producer
+producer = Producer({'bootstrap.servers': 'localhost:9092'})
+
+def delivery_report(err, msg):
+    """ Called once for each message produced to indicate delivery result.
+        Triggered by poll() or flush(). """
+    if err is not None:
+        print('Message delivery failed: {}'.format(err))
+    else:
+        print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
 
 # SQLAlchemy models
 class User(UserMixin, db.Model):
@@ -63,7 +76,6 @@ class Recommendation(db.Model):
 
     user = db.relationship('User', backref=db.backref('recommendation', uselist=False))
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -107,8 +119,14 @@ def game_detail(id):
         review = Review.query.filter_by(id=id, user_id=current_user.user_id).first()
         if review:
             user_rating = review.rating
-    return render_template('game_detail.html', game=game, user_rating=user_rating)
 
+    # Send message to Kafka regardless of user authentication
+    user_id = current_user.user_id if current_user.is_authenticated else None
+    event = {'event': 'game_viewed', 'user_id': user_id, 'game_id': id}
+    producer.produce('user-events', key=str(user_id), value=json.dumps(event), callback=delivery_report)
+    producer.flush()
+
+    return render_template('game_detail.html', game=game, user_rating=user_rating)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -125,6 +143,12 @@ def register():
         new_user = User(username=username, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
+
+        # Send message to Kafka
+        event = {'event': 'user_created', 'user_id': new_user.user_id, 'username': username}
+        producer.produce('user-events', key=str(new_user.user_id), value=json.dumps(event), callback=delivery_report)
+        producer.flush()
+
         login_user(new_user)
         return redirect(url_for('home'))
 
@@ -175,8 +199,6 @@ def user_profile():
         recommended_games = [Game.query.get(game_id) for game_id in recommendation.recommendation_list]
 
     return render_template('profile.html', user=current_user, rated_games=rated_games, next_url=next_url, prev_url=prev_url, recommended_games=recommended_games)
-
-
 
 @app.route('/rate_game/<int:game_id>', methods=['POST'])
 @login_required
