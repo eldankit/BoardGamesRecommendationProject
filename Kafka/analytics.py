@@ -24,6 +24,17 @@ def reset_counts():
     user_counts = defaultdict(int)
     game_views = defaultdict(int)
 
+def save_daily_analytics():
+    analytics_data = {
+        "date": str(current_date),
+        "user_counts": dict(user_counts),
+        "game_views": dict(game_views)
+    }
+    filename = f"analytics_{current_date}.json"
+    with open(filename, 'w') as json_file:
+        json.dump(analytics_data, json_file, indent=4)
+    print(f"Saved daily analytics to {filename}")
+
 while True:
     msg = consumer.poll(timeout=1.0)
     if msg is None:
@@ -40,6 +51,7 @@ while True:
 
     # Reset counts if the day has changed
     if datetime.now().date() != current_date:
+        save_daily_analytics()
         current_date = datetime.now().date()
         reset_counts()
 
