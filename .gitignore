@@ -12,3 +12,4 @@
 /Database/initdb.d/game_info.csv
 /Database/initdb.d/reviews_15m.csv
 /Database/initdb.d/users_15m.csv
+/Database/postgres-image/dump.sql
