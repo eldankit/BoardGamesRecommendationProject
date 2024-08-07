@@ -6,7 +6,7 @@ from pyspark.ml.evaluation import RegressionEvaluator
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 # PostgreSQL configuration
-db_url = "jdbc:postgresql://localhost:5432/postgres"
+db_url = "jdbc:postgresql://postgresql:5432/postgres"
 db_properties = {
     "user": "postgres",
     "password": "mypassword",

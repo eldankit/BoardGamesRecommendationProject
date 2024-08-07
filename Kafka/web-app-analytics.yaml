@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app-analytics
+  namespace: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app-analytics
+  template:
+    metadata:
+      labels:
+        app: web-app-analytics
+    spec:
+      containers:
+      - name: web-app-analytics
+        image: eldankit/boardgames_analytics:latest
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:9092"
+        - name: KAFKA_TOPIC
+          value: "user-events"
+        volumeMounts:
+        - name: analytics-storage
+          mountPath: /app/analytics-data
+      volumes:
+      - name: analytics-storage
+        persistentVolumeClaim:
+          claimName: pvc-analytics
