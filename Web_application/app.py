@@ -84,6 +84,15 @@ def load_user(user_id):
 def home():
     return render_template('welcome.html')
 
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '')
+    if query:
+        results = Game.query.filter(Game.name.ilike(f'%{query}%')).all()
+    else:
+        results = []
+    return render_template('search_results.html', query=query, results=results)
+
 @app.route('/top-ranked-games')
 def top_ranked_games():
     page = request.args.get('page', 1, type=int)

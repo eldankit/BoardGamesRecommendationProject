@@ -205,3 +205,17 @@ button:hover {
 .explore-links a:hover {
     background-color: #45a049;
 }
+
+.search-form {
+    display: flex;
+    align-items: center;
+}
+
+.search-form input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    flex-grow: 1;
+}
+
+

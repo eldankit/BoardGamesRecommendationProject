@@ -13,6 +13,11 @@
             <a href="{{ url_for('top_ranked_games') }}">Top Ranked</a>
             <a href="{{ url_for('top_rated_games') }}">Top Rated</a>
             <a href="{{ url_for('most_popular_games') }}">Most Popular</a>
+            <form action="{{ url_for('search') }}" method="get" class="search-form">
+                <input type="text" name="query" placeholder="Search for games" required>
+            </form>
+            
+            
         </div>
         <div class="navbar-right">
             {% if current_user.is_authenticated %}
