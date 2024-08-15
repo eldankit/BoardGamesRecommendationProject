@@ -5,7 +5,9 @@ from sqlalchemy import func, desc
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
 from confluent_kafka import Producer
+from confluent_kafka.admin import AdminClient, NewTopic
 import json
+import os
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Set a secret key for sessions
@@ -19,8 +21,38 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# Initialize Kafka producer
-producer = Producer({'bootstrap.servers': 'kafka:9092'})
+kafka_bootstrap_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+
+# Kafka configuration
+conf = {
+    'bootstrap.servers': kafka_bootstrap_servers  # Kafka broker address in Docker
+}
+
+# Create AdminClient instance
+admin_client = AdminClient(conf)
+
+# Topic configuration
+topic_name = 'user-events'
+num_partitions = 1
+replication_factor = 1
+
+# Check if topic exists
+topic_metadata = admin_client.list_topics(timeout=10)
+if topic_name not in topic_metadata.topics:
+    print(f"Creating topic '{topic_name}'...")
+    new_topic = NewTopic(topic_name, num_partitions, replication_factor)
+    fs = admin_client.create_topics([new_topic])
+
+    # Wait for operation to finish
+    for topic, f in fs.items():
+        try:
+            f.result()  # The result itself is None
+            print(f"Topic '{topic}' created successfully.")
+        except Exception as e:
+            print(f"Failed to create topic '{topic}': {e}")
+
+# Create Producer instance
+producer = Producer(**conf)
 
 def delivery_report(err, msg):
     """ Called once for each message produced to indicate delivery result.
@@ -240,4 +272,4 @@ def rate_game(game_id):
     return redirect(url_for('game_detail', id=game_id))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)

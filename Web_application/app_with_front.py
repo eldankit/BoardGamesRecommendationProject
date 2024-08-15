@@ -22,6 +22,8 @@ login_manager.login_view = 'login'
 # Initialize Kafka producer
 producer = Producer({'bootstrap.servers': 'localhost:9092'})
 
+
+
 def delivery_report(err, msg):
     """ Called once for each message produced to indicate delivery result.
         Triggered by poll() or flush(). """

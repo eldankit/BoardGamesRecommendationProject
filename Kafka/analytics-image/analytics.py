@@ -4,10 +4,12 @@ from datetime import datetime
 from collections import defaultdict
 import signal
 import sys
+import os
 
+kafka_bootstrap_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 # Kafka consumer configuration
 conf = {
-    'bootstrap.servers': 'kafka:9092',  # Use the Kubernetes service name
+    'bootstrap.servers': kafka_bootstrap_servers,  # Use the Kubernetes service name
     'group.id': 'analytics',
     'auto.offset.reset': 'earliest'
 }
@@ -46,6 +48,7 @@ signal.signal(signal.SIGINT, handle_termination)
 signal.signal(signal.SIGTERM, handle_termination)
 
 while True:
+    print("Analytics is live and listening  to app...")
     msg = consumer.poll(timeout=1.0)
     if msg is None:
         continue

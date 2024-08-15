@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web-app-analytics
-  namespace: kafka
 spec:
   replicas: 1
   selector:
@@ -18,7 +17,7 @@ spec:
         image: eldankit/boardgames_analytics:latest
         env:
         - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "kafka:9092"
+          value: "kafka-service:9092"
         - name: KAFKA_TOPIC
           value: "user-events"
         volumeMounts:
