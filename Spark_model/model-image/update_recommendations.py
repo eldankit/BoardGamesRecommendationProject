@@ -1,10 +1,7 @@
-# Save this content as update_recommendations.py
-import json
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, explode, count, collect_list, slice
 from pyspark.ml.recommendation import ALS
 from pyspark.ml.evaluation import RegressionEvaluator
-from apscheduler.schedulers.blocking import BlockingScheduler
 
 # PostgreSQL configuration
 db_url = "jdbc:postgresql://postgresql:5432/postgres"
@@ -15,15 +12,11 @@ db_properties = {
     "fetchsize": "1000"  # Adjust the fetch size as needed
 }
 
-# URL of the PostgreSQL JDBC .jar file
-jdbc_jar_url = "https://jdbc.postgresql.org/download/postgresql-42.7.3.jar"
-
 # Function to perform the recommendation update
 def update_recommendations():
     # Initialize SparkSession
     spark = SparkSession.builder \
         .appName("Game Recommendation") \
-        .config("spark.jars", jdbc_jar_url) \
         .getOrCreate()
 
     # Partitioning properties
@@ -61,7 +54,6 @@ def update_recommendations():
 
     # Train the ALS model on the training data
     als_model = als.fit(train_data)
-
 
     # Make predictions on the test data
     predictions = als_model.transform(test_data)
@@ -110,9 +102,9 @@ def update_recommendations():
         properties=db_properties
     )
 
+    print("Recommendations for users successfully updated!")
+
     spark.stop()
 
-# Schedule the update function to run every 4 hours
-scheduler = BlockingScheduler()
-scheduler.add_job(update_recommendations, 'interval', hours=4)
-scheduler.start()
+# Call the function to run the job
+update_recommendations()

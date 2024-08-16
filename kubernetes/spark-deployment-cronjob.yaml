@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pyspark-recommendations
+spec:
+  schedule: "0 */4 * * *"  # Every 4 hours
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: pyspark-recommendations
+              image: eldankit/boardgames-pyspark-recommendations:latest
+              # imagePullPolicy: IfNotPresent
+              env:
+                - name: DB_URL
+                  value: "jdbc:postgresql://postgresql:5432/postgres"
+                - name: DB_USER
+                  value: "postgres"
+                - name: DB_PASSWORD
+                  value: "mypassword"
+              resources:
+                requests:
+                  memory: "1Gi"
+                  cpu: "500m"
+                limits:
+                  memory: "2Gi"
+                  cpu: "1"
+          restartPolicy: OnFailure
