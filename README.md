@@ -90,3 +90,48 @@ https://www.kaggle.com/datasets/jvanelteren/boardgamegeek-reviews
 - **Description**: Allows logged-in users to rate a specific game.
 - **Features**: Users can submit a rating for a game, which updates the game's average rating and the number of users who rated it. The rating is stored in the `reviews` table, and the user is redirected back to the game detail page with a success message.
 
+## Spark CronJob: Recommendation Model Update
+
+### Overview
+Every 12 hours, a Spark CronJob is triggered to update the game recommendations for each user based on their ratings. This process involves training a machine learning model using the Alternating Least Squares (ALS) algorithm and generating a list of recommended games for each user. The recommendations are then stored in the `recommendations` table in the PostgreSQL database.
+
+### Detailed Process
+
+1. **SparkSession Initialization**:
+   - A SparkSession is created to handle the distributed data processing tasks.
+
+2. **Data Loading from PostgreSQL**:
+   - The job connects to the PostgreSQL database and loads the `reviews` data into a Spark DataFrame. The reviews data includes user ratings for various games.
+
+3. **Data Partitioning**:
+   - The data is partitioned based on the `user_id` column to optimize performance, particularly when working with large datasets.
+
+4. **Data Splitting**:
+   - The reviews data is split into training (80%) and test (20%) datasets to train and evaluate the model.
+
+5. **Model Training**:
+   - An ALS model is trained on the training data using predefined parameters (`rank`, `regParam`, `maxIter`). ALS is a popular collaborative filtering algorithm used for building recommendation systems.
+
+6. **Model Evaluation**:
+   - The trained model is evaluated using the test data, and the Root Mean Square Error (RMSE) is calculated to assess the accuracy of the predictions.
+
+7. **Generating Recommendations**:
+   - The model generates the top 50 game recommendations for each user.
+   - A filter is applied to consider only games with more than 100 reviews to ensure the recommendations are based on well-reviewed games.
+
+8. **Exploding and Filtering Recommendations**:
+   - The recommendations are exploded into individual entries, and each recommendation is filtered by joining with the list of popular games.
+
+9. **Selecting Top 5 Recommendations**:
+   - From the filtered recommendations, the top 5 games are selected for each user.
+
+10. **Storing Recommendations in PostgreSQL**:
+    - The final list of top 5 recommendations for each user is written back to the `recommendations` table in PostgreSQL, overwriting any existing data.
+
+11. **Completion**:
+    - The SparkSession is stopped, and the process ends with a confirmation message indicating that the recommendations have been successfully updated.
+
+### Purpose
+This automated process ensures that each user receives personalized game recommendations based on the latest ratings. By running every 12 hours, the system adapts to new user ratings and updates the recommendations accordingly, providing users with up-to-date and relevant suggestions.
+
+
