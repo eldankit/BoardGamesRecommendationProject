@@ -313,6 +313,11 @@ This section provides a step-by-step guide for deploying the web application on 
    kubectl get hpa
    kubectl get cronjobs
    ```
+   The result of this check should look like this:
+![Screenshot 2024-08-17 at 11 29 07](https://github.com/user-attachments/assets/91382316-c658-4370-9c61-a8ac853b2df4)
+
+
+   
 ### Step 7: Test the Web Application
 1. **Forward the service port to your local machine**:
    ```
@@ -320,5 +325,9 @@ This section provides a step-by-step guide for deploying the web application on 
    ```
 2. **Open your web browser and navigate to localhost:8080 to test the application.**
 
+If everything is done correctly, you should get this homepage!
 
-By following these steps, you will have successfully deployed your web application on a Kubernetes cluster. Make sure to verify that each component is up and running and that the web application is accessible via your browser.
+<img width="1505" alt="Screenshot 2024-08-17 at 19 21 34" src="https://github.com/user-attachments/assets/6a0e629b-01e8-461f-80e6-f9c56d9e25c8">
+
+
+By following these steps, you have successfully deployed your web application on a Kubernetes cluster!. Make sure to verify that each component is up and running and that the web application is accessible via your browser.
