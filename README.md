@@ -44,6 +44,63 @@ https://www.kaggle.com/datasets/jvanelteren/boardgamegeek-reviews
 - The Spark CronJob updates recommendations in the PostgreSQL database every 12 hours based on the latest ratings.
 - This setup allows for scalable web app deployment, real-time data streaming, and periodic updates to recommendations.
 
+## Database Tables Structure
+
+The following is a description of the database tables used in this web application. These tables are created and populated during the initialization process.
+
+### 1. `users` Table
+- **Purpose**: Stores user information.
+- **Columns**:
+  - `user_id`: An auto-incrementing integer that uniquely identifies each user (Primary Key).
+  - `username`: A string representing the username of the user.
+  - `email`: A string representing the user's email address (must be unique).
+  - `password`: A string representing the hashed password of the user.
+
+### 2. `games` Table
+- **Purpose**: Stores information about the board games.
+- **Columns**:
+  - `ID`: An integer that uniquely identifies each game (Primary Key).
+  - `name`: A string representing the name of the game.
+  - `thumbnail`: A text field containing a URL or path to the game's thumbnail image.
+  - `image`: A text field containing a URL or path to the game's full-size image.
+  - `description`: A text field with a description of the game.
+  - `yearpublished`: A floating-point number indicating the year the game was published.
+  - `minplayers`: A floating-point number representing the minimum number of players required for the game.
+  - `maxplayers`: A floating-point number representing the maximum number of players that can play the game.
+  - `playingtime`: A floating-point number indicating the average playing time of the game in minutes.
+  - `minage`: A floating-point number representing the minimum recommended age to play the game.
+  - `category`: An array of strings representing the categories the game belongs to.
+  - `usersrated`: A floating-point number representing the total number of users who have rated the game.
+  - `average`: A floating-point number representing the average rating of the game.
+  - `bayesaverage`: A floating-point number representing the Bayesian average rating of the game.
+  - `board_game_rank`: A floating-point number representing the overall rank of the game.
+
+### 3. `reviews` Table
+- **Purpose**: Stores user reviews and ratings for games.
+- **Columns**:
+  - `rating`: A floating-point number representing the rating a user has given to a game.
+  - `ID`: An integer representing the game being rated (Foreign Key referencing `games(ID)`).
+  - `user_id`: An integer representing the user who provided the rating (Foreign Key referencing `users(user_id)`).
+- **Primary Key**: The combination of `ID` and `user_id` ensures that each user can only rate a game once.
+
+### 4. `recommendations` Table
+- **Purpose**: Stores personalized game recommendations for each user.
+- **Columns**:
+  - `user_id`: An integer that uniquely identifies each user (Primary Key, Foreign Key referencing `users(user_id)`).
+  - `recommendation_list`: An array of integers representing the IDs of recommended games for the user (Foreign Key referencing `games(ID)`).
+
+### Data Import
+- **CSV Imports**: 
+  - User data is imported from `users_15m.csv` into the `users` table.
+  - Game data is imported from `game_info.csv` into the `games` table.
+  - Review data is imported from `reviews_15m.csv` into the `reviews` table.
+
+- **Sequence Adjustment**: 
+  - After importing data into the `users` table, the sequence for `user_id` is adjusted to start at the next available ID to ensure proper auto-incrementation.
+
+This table structure provides a robust foundation for managing users, games, reviews, and recommendations within the application.
+
+
 ## Web Application Pages and Features
 
 ### 1. Home Page (`/`)
