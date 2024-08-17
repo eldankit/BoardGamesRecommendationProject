@@ -14,34 +14,35 @@ https://www.kaggle.com/datasets/jvanelteren/boardgamegeek-reviews
 
 ### PostgreSQL Database:
 
-Persistent Volume: Stores tables for Boardgames, users, ratings, and recommendations.
+- **Persistent Volume**: Stores tables for Boardgames, users, ratings, and recommendations.
+- **Database Pod**: A PostgreSQL pod that handles the database
 
 ### Web Application Deployment:
 
-HorizontalPodAutoscaler: Starts with 2 replicas and scales up to 5.
-LoadBalancer: Distributes traffic among the web app replicas.
+- **HorizontalPodAutoscaler**: Starts with 2 replicas and scales up to 5.
+- **LoadBalancer**: Distributes traffic among the web app replicas.
 
 ### Kafka Deployment:
 
-Zookeeper Pod: Manages Kafka broker coordination.
-Kafka Broker Pod: Receives information from the web app (acting as a producer).
+- **Zookeeper Pod**: Manages Kafka broker coordination.
+- **Kafka Broker Pod**: Receives information from the web app (acting as a producer).
 
 ### Web-App-Analytics:
 
-Persistent Volume: Stores processed analytics data.
-Interaction with Kafka: Consumes data from Kafka for processing.
+- **Persistent Volume**: Stores processed analytics data.
+- **Analytics pod**: Consumes data from Kafka for processing daily analytics.
 
 ### CronJob with Spark ALS Model:
 
-Schedule: Runs every 12 hours.
-Task: Generates new recommendations based on the ratings table and updates the PostgreSQL database.
+- **Schedule**: Runs every 12 hours.
+- **Task**: Generates new recommendations based on the ratings table and updates the PostgreSQL database.
 
 ### Interaction Flow:
-The web app interacts with the database for user, game, and recommendation data.
-User interactions or other events are sent to Kafka by the web app.
-The web-app-analytics deployment processes the Kafka messages and stores the analytics data.
-The Spark CronJob updates recommendations in the PostgreSQL database every 12 hours based on the latest ratings.
-This setup allows for scalable web app deployment, real-time data streaming, and periodic updates to recommendations.
+- The web app interacts with the database for user, game, and recommendation data.
+- User interactions or other events are sent to Kafka by the web app.
+- The web-app-analytics deployment processes the Kafka messages and stores the analytics data.
+- The Spark CronJob updates recommendations in the PostgreSQL database every 12 hours based on the latest ratings.
+- This setup allows for scalable web app deployment, real-time data streaming, and periodic updates to recommendations.
 
 ## Web Application Pages and Features
 
