@@ -44,6 +44,32 @@ https://www.kaggle.com/datasets/jvanelteren/boardgamegeek-reviews
 - The Spark CronJob updates recommendations in the PostgreSQL database every 12 hours based on the latest ratings.
 - This setup allows for scalable web app deployment, real-time data streaming, and periodic updates to recommendations.
 
+## Data Processing and CSV Creation
+
+Before populating the database tables, the original data was processed and transformed into CSV files suitable for importing. This process involved cleaning and formatting data from various sources to match the schema of our database tables.
+
+### 1. **Games Data Processing**
+- **Source**: The original game data was loaded from a CSV file named `games_detailed_info.csv`.
+- **Steps**:
+  1. **Dropping Unnecessary Columns**: Columns that were not needed were removed from the DataFrame.
+  2. **Handling Data Types**: The `Board Game Rank` column was converted to a numeric type, with any errors coerced to `NaN`.
+  3. **Selecting and Renaming Columns**: Only relevant columns were kept, and they were renamed to match the database schema (e.g., `primary` to `name`, `id` to `ID`).
+  4. **Converting Categories**: The `category` column, which contained lists of categories as strings, was transformed into a PostgreSQL array format.
+  5. **Merging Additional Data**: Any games that were missing from the initial DataFrame were added from another CSV file (`2020-08-19.csv`).
+  6. **Saving the Processed Data**: The cleaned and formatted data was saved to a new CSV file named `game_info.csv`.
+
+### 2. **Users and Reviews Data Processing**
+- **Source**: The original reviews data was loaded from two CSV files: `bgg-19m-reviews.csv` and `bgg-15m-reviews.csv`.
+- **Steps**:
+  1. **Dropping Unnecessary Columns**: Columns such as `comment`, `name`, and any unnamed columns were removed from the DataFrame.
+  2. **Handling Missing Data**: Rows with missing values were dropped to ensure clean data.
+  3. **Mapping Users to IDs**: Unique usernames were mapped to numerical user IDs to create a `user_id` column.
+  4. **Creating the Users Table**: A new DataFrame containing `user_id` and `username` columns was created. Placeholder columns for `email` and `password` were added, with `NaN` values (or placeholders) since this data was not available in the original file.
+  5. **Saving the Processed Data**: The processed reviews data was saved to `reviews_19m.csv` and `reviews_15m.csv`, while the user data was saved to `users_19m.csv` and `users_15m.csv`.
+
+This ETL (Extract, Transform, Load) process ensured that the data was clean, properly formatted, and ready to be imported into the PostgreSQL database tables.
+
+
 ## Database Tables Structure
 
 The following is a description of the database tables used in this web application. These tables are created and populated during the initialization process.
