@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: pyspark-recommendations
 spec:
-  schedule: "0 */4 * * *"  # Every 4 hours
+  schedule: "0 */12 * * *"  # Every 12 hours
   jobTemplate:
     spec:
       template:
