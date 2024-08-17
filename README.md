@@ -10,7 +10,8 @@ https://www.kaggle.com/datasets/jvanelteren/boardgamegeek-reviews
 
 ## Architecture of the code:
 
-![Boardgames-webapp drawio](https://github.com/user-attachments/assets/488d39a8-29d9-4e1b-afd2-097710d3e5fe)
+![bg1 drawio](https://github.com/user-attachments/assets/b5c6cc78-d968-4518-9397-6c3729e05a91)
+
 
 ### PostgreSQL Database:
 
