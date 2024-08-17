@@ -254,5 +254,70 @@ The analytics code is responsible for collecting and processing events generated
 ### Purpose
 This analytics system provides an automated way to track user engagement with the web application. By documenting daily user registrations and game views, the system enables the analysis of user behavior over time, which can be valuable for understanding trends, improving user experience, and making data-driven decisions.
 
+## Deployment Guide: Deploying the Web Application on Kubernetes
+
+This section provides a step-by-step guide for deploying the web application on a Kubernetes cluster. The deployment process involves setting up a PostgreSQL database, Kafka, the web application itself, an analytics pod, and a Spark CronJob for updating game recommendations.
+
+### Step 1: Deploy the PostgreSQL Database with Persistent Volume Claim (PVC)
+1. **Create the Persistent Volume Claim (PVC) for the database**:
+   ```
+   kubectl apply -f postgres-pvc.yaml
+   ```
+2. **Deploy the PostgreSQL database**:
+   ```
+   kubectl apply -f postgresql-deployment.yaml
+   ```
+3. **Expose the PostgreSQL service**:
+   ```
+   kubectl apply -f postgresql-service.yaml
+   ```
+### Step 2: Deploy Kafka Zookeeper and Broker
+1. **Deploy the Zookeeper instance**:
+   ```
+   kubectl apply -f zookeeper-deployment.yaml
+   ```
+2. **Deploy the Kafka broker**:
+   ```
+   kubectl apply -f kafka-deployment.yaml
+   ```
+### Step 3: Deploy the Web Application with LoadBalancer and Autoscaler
+1. **Deploy the web application**:
+   ```
+   kubectl apply -f web-app-deployment.yaml
+   ```
+2. **Set up the Horizontal Pod Autoscaler (HPA) for the web application**:
+   ```
+   kubectl apply -f web-app-hpa.yaml
+   ```
+### Step 4: Deploy the Web App Analytics Pod with PVC for Logging analytics data
+1. **Create the Persistent Volume Claim (PVC) for analytics logging analytics data**:
+   ```
+   kubectl apply -f pvc-analytics.yaml
+   ```
+2. **Deploy the web app analytics pod**:
+   ```
+   kubectl apply -f web-app-analytics.yaml
+   ```
+### Step 5: Deploy the Spark CronJob for Periodic Recommendation Updates
+1. **Deploy the Spark CronJob**:
+   ```
+   kubectl apply -f spark-deployment-cronjob.yaml
+   ```
+### Step 6: Verify the Deployment
+1. **Check that all deployments, pods, services, horizontal pod autoscalers (HPA), and cronjobs are running correctly**:
+   ```
+   kubectl get deployments
+   kubectl get pods
+   kubectl get svc
+   kubectl get hpa
+   kubectl get cronjobs
+   ```
+### Step 7: Test the Web Application
+1. **Forward the service port to your local machine**:
+   ```
+   kubectl port-forward service/flask-app-service 8080:80
+   ```
+2. **Open your web browser and navigate to localhost:8080 to test the application.**
 
 
+By following these steps, you will have successfully deployed your web application on a Kubernetes cluster. Make sure to verify that each component is up and running and that the web application is accessible via your browser.
