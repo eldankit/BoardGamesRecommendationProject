@@ -68,7 +68,7 @@ Before populating the database tables, the original data was processed and trans
   4. **Creating the Users Table**: A new DataFrame containing `user_id` and `username` columns was created. Placeholder columns for `email` and `password` were added, with `NaN` values (or placeholders) since this data was not available in the original file.
   5. **Saving the Processed Data**: The processed reviews data was saved to `reviews_19m.csv` and `reviews_15m.csv`, while the user data was saved to `users_19m.csv` and `users_15m.csv`.
 
-This ETL (Extract, Transform, Load) process ensured that the data was clean, properly formatted, and ready to be imported into the PostgreSQL database tables.
+This data pipeline ensured that the data was clean, properly formatted, and ready to be imported into the PostgreSQL database tables.
 
 
 ## Database Tables Structure
